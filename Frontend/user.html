@@ -154,7 +154,7 @@
 
 <script>
     const token = localStorage.getItem('token');
-    const API_URL = "http://localhost:3000/api/books";
+    const API_URL = "/api/books";
 
     // التحقق من وجود التوكن
     if (!token) window.location.href = 'login.html';
@@ -225,7 +225,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const xhr = new XMLHttpRequest();
-                xhr.open("PUT", `http://localhost:3000/api/books/borrow/${bookId}`, true);
+                xhr.open("PUT", `/api/books/borrow/${bookId}`, true);
                 xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('token'));
 
                 xhr.onreadystatechange = function() {

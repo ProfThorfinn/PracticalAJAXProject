@@ -57,7 +57,7 @@
     // دالة جلب الكتب
     function fetchMyBooks() {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://localhost:3000/api/my-books", true);
+        xhr.open("GET", "/api/my-books", true);
         xhr.setRequestHeader("Authorization", "Bearer " + token);
 
         xhr.onreadystatechange = function() {
@@ -96,7 +96,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const xhr = new XMLHttpRequest();
-                xhr.open("PUT", `http://localhost:3000/api/books/return/${bookId}`, true);
+                xhr.open("PUT", `/api/books/return/${bookId}`, true);
                 xhr.setRequestHeader("Authorization", "Bearer " + token);
 
                 xhr.onreadystatechange = function() {
