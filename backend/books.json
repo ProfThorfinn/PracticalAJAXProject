@@ -1,22 +1,22 @@
 [
   { "id": 1, "title": "Clean Code", "author": "Robert C. Martin", "isAvailable": true, "categories": ["Programming", "Software Engineering"] },
-  { "id": 2, "title": "The Pragmatic Programmer", "author": "Andrew Hunt", "isAvailable": false, "categories": ["Development", "Career Development"] },
+  { "id": 2, "title": "The Pragmatic Programmer", "author": "Andrew Hunt", "isAvailable": true, "categories": ["Development", "Career Development"] },
   { "id": 3, "title": "Refactoring", "author": "Martin Fowler", "isAvailable": true, "categories": ["Programming", "Refactoring"] },
   { "id": 4, "title": "You Don't Know JS", "author": "Kyle Simpson", "isAvailable": true, "categories": ["JavaScript", "Web Development"] },
-  { "id": 5, "title": "Design Patterns", "author": "Erich Gamma", "isAvailable": false, "categories": ["Software Design", "Architecture"] },
+  { "id": 5, "title": "Design Patterns", "author": "Erich Gamma", "isAvailable": true, "categories": ["Software Design", "Architecture"] },
   { "id": 6, "title": "Eloquent JavaScript", "author": "Marijn Haverbeke", "isAvailable": true, "categories": ["JavaScript", "Programming"] },
   { "id": 7, "title": "Introduction to Algorithms", "author": "Thomas H. Cormen", "isAvailable": true, "categories": ["Algorithms", "Computer Science"] },
   { "id": 8, "title": "Domain-Driven Design", "author": "Eric Evans", "isAvailable": true, "categories": ["Software Architecture", "DDD"] },
   { "id": 9, "title": "Clean Architecture", "author": "Robert C. Martin", "isAvailable": true, "categories": ["Architecture", "Software Design"] },
   { "id": 10, "title": "JavaScript: The Good Parts", "author": "Douglas Crockford", "isAvailable": true, "categories": ["JavaScript", "Web Development"] },
-  { "id": 11, "title": "Code Complete", "author": "Steve McConnell", "isAvailable": false, "categories": ["Software Development", "Programming"] },
+  { "id": 11, "title": "Code Complete", "author": "Steve McConnell", "isAvailable": true, "categories": ["Software Development", "Programming"] },
   { "id": 12, "title": "The Clean Coder", "author": "Robert C. Martin", "isAvailable": true, "categories": ["Professionalism", "Career"] },
   { "id": 13, "title": "Soft Skills", "author": "John Sonmez", "isAvailable": true, "categories": ["Career Development", "Personal Growth"] },
   { "id": 14, "title": "Patterns of Enterprise Application Architecture", "author": "Martin Fowler", "isAvailable": true, "categories": ["Architecture", "Enterprise"] },
-  { "id": 15, "title": "Cracking the Coding Interview", "author": "Gayle Laakmann McDowell", "isAvailable": false, "categories": ["Algorithms", "Interview Prep"] },
+  { "id": 15, "title": "Cracking the Coding Interview", "author": "Gayle Laakmann McDowell", "isAvailable": true, "categories": ["Algorithms", "Interview Prep"] },
   { "id": 16, "title": "Head First Design Patterns", "author": "Eric Freeman", "isAvailable": true, "categories": ["Design Patterns", "Programming"] },
   { "id": 17, "title": "The Phoenix Project", "author": "Gene Kim", "isAvailable": true, "categories": ["DevOps", "Management"] },
   { "id": 18, "title": "Effective Java", "author": "Joshua Bloch", "isAvailable": true, "categories": ["Java", "Programming"] },
   { "id": 19, "title": "Python Crash Course", "author": "Eric Matthes", "isAvailable": true, "categories": ["Python", "Programming"] },
-  { "id": 20, "title": "Building Microservices", "author": "Sam Newman", "isAvailable": false, "categories": ["Microservices", "Architecture"] }
+  { "id": 20, "title": "Building Microservices", "author": "Sam Newman", "isAvailable": true, "categories": ["Microservices", "Architecture"] }
 ]
