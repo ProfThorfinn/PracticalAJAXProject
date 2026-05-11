@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Library</title>
+    <style>
+        body {
+                font-family: 'Segoe UI',
+                sans-serif; background: #f0f2f5; 
+                display: flex; 
+                justify-content: center; 
+                align-items: center; 
+                height: 100vh; 
+                margin: 0; 
+            }
+        .login-card {
+                background: white;
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                width: 100%;
+                max-width: 400px;
+            }
+        h2 {
+                text-align: center; 
+                color: #1e3c72; 
+                margin-bottom: 30px;
+            }
+        .form-group {
+                margin-bottom: 20px;
+            }
+        input {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #eee;
+                border-radius: 10px;
+            }
+        button {
+                width: 100%;
+                padding: 14px;
+                background: #4a90e2;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+        button:hover {
+                background: #357abd;
+            }
+        .footer-link {
+                text-align: center;
+                margin-top: 20px;
+                font-size: 0.9rem;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>🔑 Welcome Back</h2>
+        <div class="form-group">
+            <input type="email" id="email" placeholder="Email Address">
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <button onclick="login()">Login to Dashboard</button>
+        <div class="footer-link">
+            New here? <a href="register.html">Create an account</a>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:3000/api/auth/login", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const res = JSON.parse(xhr.responseText);
+                    localStorage.setItem('token', res.token);
+                    localStorage.setItem('role', res.role);
+                    localStorage.setItem('userName', res.name); // ضيف دي
+                    localStorage.setItem('userEmail', email);    // ودي كمان
+
+                    if(res.role === 'admin') window.location.href = 'index.html';
+                    else window.location.href = 'user.html';
+                } else if(xhr.readyState === 4) {
+                    alert("Invalid Credentials!");
+                }
+            };
+            xhr.send(JSON.stringify({ email, password }));
+        }
+    </script>
+</body>
+</html>

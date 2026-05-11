@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Explore Books | Smart Library</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            color: var(--dark);
+        }
+
+        /* Navbar Modern Style */
+        .navbar {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar h2 { margin: 0; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--dark); font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn-logout {
+            background: #fff0f0;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-logout:hover { background: var(--danger); color: white; }
+
+        /* Container */
+        .container { padding: 40px 5%; max-width: 1300px; margin: 0 auto; }
+
+        .welcome-header { margin-bottom: 40px; text-align: left; }
+        .welcome-header h1 { font-size: 2.2rem; margin-bottom: 10px; color: var(--dark); }
+        .welcome-header p { color: #7f8c8d; font-size: 1.1rem; }
+
+        /* Books Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* Modern Book Card */
+        .book-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid #eee;
+        }
+
+        .book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+
+        /* Status Badge */
+        .status-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tag-available { background: #e6f9ed; color: var(--success); }
+        .tag-borrowed { background: #fff1f0; color: var(--danger); }
+
+        .book-card h3 { margin: 15px 0 10px 0; font-size: 1.25rem; line-height: 1.4; color: var(--dark); min-height: 56px; }
+        .book-card .author { color: #95a5a6; font-size: 0.9rem; margin-bottom: 15px; }
+        
+        .categories { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; }
+        .cat-pill { background: #f0f3f7; color: #5d6d7e; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; }
+
+        /* Action Button */
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: auto;
+        }
+
+        .btn-available { background: var(--primary); color: white; box-shadow: 0 4px 14px rgba(74, 144, 226, 0.3); }
+        .btn-available:hover { background: #357abd; transform: scale(1.02); }
+
+        .btn-disabled { background: #ebeef2; color: #aab2bd; cursor: not-allowed; }
+
+        /* Loading Spinner */
+        #loader { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <h2><span>📚</span> Smart Library</h2>
+    <div class="nav-links">
+        <a href="user.html">Explore</a>
+        <a href="profile.html">My Profile</a>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <header class="welcome-header">
+        <h1 id="welcomeUser">Hello, Reader!</h1>
+        <p>What would you like to read today?</p>
+    </header>
+
+    <div id="loader">Loading books...</div>
+    <div id="userBooks" class="books-grid"></div>
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    const API_URL = "http://localhost:3000/api/books";
+
+    // التحقق من وجود التوكن
+    if (!token) window.location.href = 'login.html';
+
+    // عرض اسم المستخدم
+    document.getElementById('welcomeUser').textContent = `Hello, ${localStorage.getItem('userName') || 'Reader'}! 👋`;
+
+    function loadUserBooks() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", API_URL, true);
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+        
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                document.getElementById('loader').style.display = 'none';
+                
+                if (xhr.status === 200) {
+                    const res = JSON.parse(xhr.responseText);
+                    renderBooks(res.data);
+                } else {
+                    alert("Session expired. Please login again.");
+                    logout();
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function renderBooks(books) {
+        const container = document.getElementById('userBooks');
+        container.innerHTML = ''; // مسح القديم
+
+        books.forEach(book => {
+            const isAvail = book.isAvailable;
+            const statusTag = isAvail ? 'Available' : 'Borrowed';
+            const tagClass = isAvail ? 'tag-available' : 'tag-borrowed';
+            const btnClass = isAvail ? 'btn-available' : 'btn-disabled';
+            const btnText = isAvail ? 'Borrow Now' : 'Not Available';
+
+            // تحويل التصنيفات لـ Pille
+            const catsHtml = book.categories ? book.categories.map(c => `<span class="cat-pill">${c}</span>`).join('') : '';
+
+            container.innerHTML += `
+                <div class="book-card">
+                    <span class="status-tag ${tagClass}">${statusTag}</span>
+                    <h3>${book.title}</h3>
+                    <p class="author">by ${book.author}</p>
+                    <div class="categories">
+                        ${catsHtml}
+                    </div>
+                    <button class="btn-action ${btnClass}" 
+                        ${!isAvail ? 'disabled' : ''} 
+                        onclick="borrowBook(${book.id})">
+                        ${btnText}
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    function borrowBook(bookId) {
+            Swal.fire({
+            title: 'Confirm Borrowing',
+            text: "Are you sure?",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Borrow!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", `http://localhost:3000/api/books/borrow/${bookId}`, true);
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('token'));
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        const res = JSON.parse(xhr.responseText);
+                        if (xhr.status === 200) {
+                            Swal.fire('Done!', 'Check your profile now', 'success');
+                            loadUserBooks();
+                        } else {
+                            Swal.fire('Error', res.message, 'error');
+                        }
+                    }
+                };
+                xhr.send();
+            }
+        });
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    // تشغيل الجلب عند التحميل
+    window.onload = loadUserBooks;
+</script>
+</body>
+</html>

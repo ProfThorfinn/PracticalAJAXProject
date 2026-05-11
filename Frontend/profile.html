@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Smart Library</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --primary: #4a90e2; --danger: #e74c3c; --dark: #2c3e50; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        .profile-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 20px; }
+        .profile-card, .section-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .avatar { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 15px; border: 4px solid #eef2f7; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+        .info-item label { display: block; font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
+        .section-title { font-size: 1.1rem; color: var(--dark); margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        .book-item { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); }
+        .book-info h4 { margin: 0; font-size: 1rem; }
+        .btn-return { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.3s; }
+        .btn-return:hover { background: #c0392b; transform: scale(1.05); }
+        .empty-state { text-align: center; color: #aaa; padding: 20px; }
+        .btn-back { text-align: center; display: block; margin-top: 10px; color: var(--primary); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="avatar" id="avatarChar">M</div>
+        <h2 id="profName" style="margin: 5px 0;">Loading...</h2>
+        <div class="info-grid">
+            <div class="info-item"><label>Email</label><span id="profEmail">...</span></div>
+            <div class="info-item"><label>Role</label><span id="profRole">...</span></div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📚 My Borrowed Books</div>
+        <div id="myBooksList">
+            <div class="empty-state">Loading your library...</div>
+        </div>
+    </div>
+
+    <a href="user.html" class="btn-back">← Back to Library</a>
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    // تحميل بيانات البروفايل من اللوكال ستورج
+    document.getElementById('profName').textContent = localStorage.getItem('userName');
+    document.getElementById('profEmail').textContent = localStorage.getItem('userEmail');
+    document.getElementById('profRole').textContent = localStorage.getItem('role');
+    document.getElementById('avatarChar').textContent = localStorage.getItem('userName').charAt(0).toUpperCase();
+
+    // دالة جلب الكتب
+    function fetchMyBooks() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:3000/api/my-books", true);
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const res = JSON.parse(xhr.responseText);
+                const container = document.getElementById('myBooksList');
+                
+                if (res.data.length > 0) {
+                    container.innerHTML = res.data.map(book => `
+                        <div class="book-item">
+                            <div class="book-info">
+                                <h4>${book.title}</h4>
+                                <p style="margin:0; font-size:0.8rem; color:#777;">by ${book.author}</p>
+                            </div>
+                            <button class="btn-return" onclick="returnBook(${book.id})">Return</button>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="empty-state">You haven\'t borrowed any books yet.</div>';
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // دالة استرجاع الكتاب
+    function returnBook(bookId) {
+        Swal.fire({
+            title: 'Return Book?',
+            text: "Are you sure you want to return this book to the library?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4a90e2',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, return it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", `http://localhost:3000/api/books/return/${bookId}`, true);
+                xhr.setRequestHeader("Authorization", "Bearer " + token);
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        const res = JSON.parse(xhr.responseText);
+                        if (xhr.status === 200) {
+                            Swal.fire('Returned!', res.message, 'success');
+                            fetchMyBooks(); // تحديث القائمة فوراً
+                        } else {
+                            Swal.fire('Error!', res.message, 'error');
+                        }
+                    }
+                };
+                xhr.send();
+            }
+        });
+    }
+
+    window.onload = fetchMyBooks;
+</script>
+</body>
+</html>
