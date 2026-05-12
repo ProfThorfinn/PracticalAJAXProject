@@ -30,21 +30,33 @@ This is a **Full-Stack** application designed to manage a library's book invento
 
 ```text
 PracticalAJAXProject/
-├── Frontend/           # Client-side Application
-│   ├── landing.html    # Main Entry Point
-│   ├── login.html      # User Authentication UI
-│   └── javascript.js   # Main AJAX Logic & API Integration
-├── backend/            # Server-side Application
-│   ├── models/         # Mongoose Schemas (User.js, Book.js)
-│   ├── routes/         # Express Routes (Auth, Books)
-│   ├── db.js           # Atlas Connection Config
-│   ├── seeder.js       # Cloud Database Population Script
-│   └── server.js       # Express Server Entry Point
-├── .gitignore          # Rules to hide node_modules & .env
-└── README.md           # Documentation
+├── Frontend/              # Client-Side Application (UI)
+│   ├── index.html           # Initial Entry Point
+│   ├── landing.html         # Main Dashboard (Book Display)
+│   ├── login.html           # User Authentication Page
+│   ├── register.html        # New User Registration
+│   ├── profile.html         # User Profile View
+│   ├── user.html            # User Management Interface
+│   └── javascript.js        # Core AJAX Logic & API Consumption
+│
+├── backend/               # Server-Side Application (API)
+│   ├── app.js               # Express Application Logic
+│   ├── server.js            # Server Entry Point & Port Listener
+│   ├── db.js                # MongoDB Atlas Connection Setup
+│   ├── book.js              # Book Model & Schema
+│   ├── user.js              # User Model & Schema
+│   ├── seeder.js            # Database Population Script
+│   ├── books.json           # Raw Seed Data
+│   ├── .env                 # Environment Variables (Private)
+│   ├── .gitignore           # Backend-specific ignore rules
+│   └── README.md            # Backend documentation
+│
+├── 📄 .gitignore             # Root ignore rules (node_modules, etc.)
+├── 📄 README.md              # Main Project Documentation (You are here)
+├── 📄 package.json           # Project dependencies & scripts
+└── 📄 package-lock.json      # Dependency lock file
 
 ```
-
 ---
 
 ## 🚀 Getting Started
