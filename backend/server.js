@@ -1,17 +1,16 @@
 const app = require('./app');
 const connectDB = require('./db');
-const open = (...args) => import('open').then(({default: open}) => open(...args));
-const PORT = 3000;
 
+const PORT = process.env.PORT || 3000;
 
 connectDB().then(() => {
-    app.listen(PORT, async () => {
-        console.log(`🚀 Server is running on http://localhost:${PORT}`);
-        try {
-            await open(`http://localhost:${PORT}/landing.html`);
-            console.log('Browser opened automatically!');
-        } catch (err) {
-            console.error('Failed to open browser:', err);
-        }
+    app.listen(PORT, () => {
+        console.log('-------------------------------------------');
+        console.log(`🚀 Server is running on: http://localhost:${PORT}`);
+        console.log(`✅ MongoDB Atlas Connection: Established`);
+        console.log('-------------------------------------------');
+        console.log(`🔗 Press Ctrl+C to stop the server`);
     });
+}).catch(err => {
+    console.error('❌ Failed to start server due to DB error:', err.message);
 });

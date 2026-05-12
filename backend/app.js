@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,11 +8,12 @@ const Book = require('./Book');
 const User = require('./user');
 
 const app = express();
-const SECRET_KEY = "MAHMOUD_XP_SECRET";
+const SECRET_KEY = process.env.JWT_SECRET || "MAHMOUD_XP_SECRET";
 
 // --- Global Middlewares ---
 app.use(cors());
 app.use(express.json());
+
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
 app.get('/', (req, res) => {
@@ -78,7 +80,6 @@ app.get('/api/books', protect, async (req, res) => {
 
 app.get('/api/my-books', protect, async (req, res) => {
     try {
-        // Books where borrowedBy matches the logged-in user's ID
         const myBooks = await Book.find({ borrowedBy: req.user.id });
         res.json({ success: true, data: myBooks });
     } catch (error) {
@@ -119,25 +120,21 @@ app.post('/api/books', protect, adminOnly, async (req, res) => {
     } catch (error) { res.status(400).json({ success: false, message: error.message }); }
 });
 
-// --- UPDATED: Admin Edit with Manual Borrowing ---
 app.put('/api/books/:id', protect, adminOnly, async (req, res) => {
     try {
         const { isAvailable, borrowedBy, ...rest } = req.body;
         let updateData = { ...rest, isAvailable };
 
-        // If admin sets status to Borrowed manually
         if (isAvailable === false || isAvailable === "false") {
-            // Must have a user selected to link the book
             updateData.borrowedBy = borrowedBy || null;
         } else {
-            // If admin sets to Available, clear the borrower
             updateData.borrowedBy = null;
         }
 
         const updatedBook = await Book.findOneAndUpdate(
             { id: parseInt(req.params.id) }, 
             updateData, 
-            { new: true }
+            { returnDocument: 'after' } // استخدام التحديث الجديد لمونجوز
         ).populate('borrowedBy', 'name');
 
         if (!updatedBook) return res.status(404).json({ success: false, message: "Book not found" });
@@ -174,7 +171,6 @@ app.put('/api/books/borrow/:id', protect, async (req, res) => {
 app.put('/api/books/return/:id', protect, async (req, res) => {
     try {
         const book = await Book.findOne({ id: parseInt(req.params.id) });
-        
         if (!book) return res.status(404).json({ message: "Book not found" });
 
         if (book.borrowedBy && book.borrowedBy.toString() !== req.user.id.toString() && req.user.role !== 'admin') {
