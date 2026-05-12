@@ -109,15 +109,24 @@ node server.js
 
 
 ---
-
-## 🧪 API Endpoints (Documentation)
-
+## 🧪 API Documentation (Endpoints)
+### 🔐 Authentication
 | Method | Endpoint | Description | Auth |
-| --- | --- | --- | --- |
-| `POST` | `/api/auth/register` | Register new user | ❌ |
-| `POST` | `/api/auth/login` | Secure login | ❌ |
-| `GET` | `/api/books` | Get all books from Atlas | ❌ |
-| `POST` | `/api/books/borrow/:id` | Borrow a book | ✅ |
-| `POST` | `/api/books/return/:id` | Return a book | ✅ |
-
----
+|---|---|---|---|
+| POST | /api/auth/register | Create a new account (Name, Email, Password, Role) | ❌ |
+| POST | /api/auth/login | Authenticate & receive JWT Token | ❌ |
+### 📖 User Operations (Standard User)
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | /api/books | View all available books in the library | ✅ |
+| GET | /api/my-books | View books currently borrowed by the user | ✅ |
+| PUT | /api/books/borrow/:id | Borrow a specific book (Users only) | ✅ |
+| PUT | /api/books/return/:id | Return a borrowed book | ✅ |
+### 🛡️ Admin Operations (Privileged)
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | /api/admin/books | View all books with detailed borrower info | 🔑 Admin |
+| GET | /api/admin/users | View all users and their borrowing activity | 🔑 Admin |
+| POST | /api/books | Add a new book to the inventory | 🔑 Admin |
+| PUT | /api/books/:id | Update book details or force manual return | 🔑 Admin |
+| DELETE | /api/books/:id | Permanently remove a book from the system | 🔑 Admin |
